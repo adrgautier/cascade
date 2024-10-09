@@ -1,0 +1,7 @@
+.github
+coverage
+!dist
+src
+tests
+tsconfig.json
+vitest.config.ts
