@@ -1,8 +1,10 @@
-import { CSSProperties, ReactNode } from "react";
+import { ReactNode } from "react";
 
 export type DefaultValue = string;
 
-export type CascadeValue<TMergeFunction extends (...args: any) => any> = Parameters<TMergeFunction>[number] | DefaultValue;
+export type CascadeValue<TCombineFunction extends (...args: any) => any> =
+	| Parameters<TCombineFunction>[number]
+	| DefaultValue;
 
 export type CascadeClassNameFunction<TValue> = (values: TValue[]) => TValue[];
 
@@ -13,24 +15,19 @@ export type CascadeClassName<TValue> =
 	| string
 	| undefined;
 
-export type CascadeStyleFunction = (value: CSSProperties) => CSSProperties;
-
-export type CascadeStyle = CascadeStyleFunction | CSSProperties | undefined;
-
 export type CascadeContext<TValue> = {
 	className: CascadeClassNameFunction<TValue>;
-	style: CascadeStyleFunction;
 };
 
-export type MergeFunction<TValue> = (...values: TValue[]) => string | undefined;
+export type CombineFunction<TValue> = (
+	...values: TValue[]
+) => string | undefined;
 
-export type CascadeObject<TValue> = MergeFunction<TValue> & {
-	style: (value: CSSProperties) => CSSProperties;
+export type CascadeObject<TValue> = CombineFunction<TValue> & {
 	Provider: (props: ProviderProps<TValue>) => ReactNode;
 };
 
 export type ProviderProps<TValue> = {
-	className?: CascadeClassName<TValue>;
-	style?: CascadeStyle;
+	className: CascadeClassName<TValue>;
 	children: ReactNode;
 };

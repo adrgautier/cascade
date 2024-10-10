@@ -1,68 +1,56 @@
-import React, { createContext, CSSProperties, use, useMemo } from "react";
+import React, { createContext, use, useMemo } from "react";
 import {
 	CascadeContext,
 	CascadeObject,
 	CascadeValue,
 	DefaultValue,
-	MergeFunction,
+	CombineFunction,
 	ProviderProps,
 } from "./types";
-import { defaultMergeFunction } from "./defaultMergeFunction";
+import { defaultCombineFunction } from "./defaultCombineFunction";
 import { createClassNameFunction } from "./createClassNameFunction";
-import { createStyleFunction } from "./createStyleFunction";
 import { pipe } from "./pipe";
 
 export function createCascade<
-	TMergeFunction extends MergeFunction<DefaultValue>
->(customMergeFunction?:TMergeFunction): CascadeObject<CascadeValue<TMergeFunction>> {
-	const mergeFunction = customMergeFunction || defaultMergeFunction;
+	TCombineFunction extends CombineFunction<DefaultValue>,
+>(
+	customCombineFunction?: TCombineFunction,
+): CascadeObject<CascadeValue<TCombineFunction>> {
+	const combineFunction = customCombineFunction || defaultCombineFunction;
 
-	const context = createContext<CascadeContext<CascadeValue<TMergeFunction>>>({
-		className: createClassNameFunction(undefined),
-		style: createStyleFunction(undefined),
-	});
+	const context = createContext<CascadeContext<CascadeValue<TCombineFunction>>>(
+		{
+			className: createClassNameFunction(undefined),
+		},
+	);
 
-	function useClassName(...values: (CascadeValue<TMergeFunction>)[]) {
+	function consumer(...values: CascadeValue<TCombineFunction>[]) {
 		const { className } = use(context);
-		return mergeFunction(...className(values));
-	}
-
-	function useStyle(value: CSSProperties) {
-		const { style } = use(context);
-		return style(value);
+		return combineFunction(...className(values));
 	}
 
 	function Provider({
 		className,
-		style,
 		children,
-	}: ProviderProps<CascadeValue<TMergeFunction>>) {
-		const { className: contextClassNameFunction, style: contextStyleFunction } =
-			use(context);
+	}: ProviderProps<CascadeValue<TCombineFunction>>) {
+		const { className: contextClassNameFunction } = use(context);
 
 		const classNameFunction = useMemo(
 			() => pipe(createClassNameFunction(className), contextClassNameFunction),
 			[className, contextClassNameFunction],
 		);
 
-		const styleFunction = useMemo(
-			() => pipe(createStyleFunction(style), contextStyleFunction),
-			[style, contextStyleFunction],
-		);
-
 		const value = useMemo(
 			() => ({
 				className: classNameFunction,
-				style: styleFunction,
 			}),
-			[classNameFunction, styleFunction],
+			[classNameFunction],
 		);
 
 		return <context.Provider value={value} children={children} />;
 	}
 
-	return Object.assign(useClassName, {
-		style: useStyle,
+	return Object.assign(consumer, {
 		Provider,
 	});
 }

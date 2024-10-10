@@ -5,44 +5,48 @@
  */
 import React from "react";
 import { createCascade } from "../src";
-import { defaultMergeFunction } from "../src/defaultMergeFunction";
+import { defaultCombineFunction } from "../src/defaultCombineFunction";
 import { describe, expect, test, vitest } from "vitest";
 
 import { render } from "@testing-library/react";
 
 describe("Cascade", () => {
 	test("no provider", () => {
-		const mergeFunction = vitest.fn(defaultMergeFunction);
-		const cs = createCascade(mergeFunction);
-		function Input(){ return <input role="button" className={cs("input")} />};
+		const combineFunction = vitest.fn(defaultCombineFunction);
+		const cc = createCascade(combineFunction);
+		function Input() {
+			return <input role="button" className={cc("input")} />;
+		}
 
-		Input.Cascade = cs.Provider;
+		Input.Cascade = cc.Provider;
 		render(<Input />);
 
-		expect(mergeFunction).toHaveBeenCalledWith("input");
+		expect(combineFunction).toHaveBeenCalledWith("input");
 	});
 	test("1 provider (string)", () => {
-		const mergeFunction = vitest.fn(defaultMergeFunction);
-		const cs = createCascade(mergeFunction);
-		const InputCascade = cs.Provider;
+		const combineFunction = vitest.fn(defaultCombineFunction);
+		const cc = createCascade(combineFunction);
+		const InputCascade = cc.Provider;
 
-		function Input(){ return <input role="button" className={cs("input")} />};
+		function Input() {
+			return <input role="button" className={cc("input")} />;
+		}
 
-		Input.Cascade = cs.Provider;
+		Input.Cascade = cc.Provider;
 		render(
 			<Input.Cascade className={"extra"}>
 				<Input />
 			</Input.Cascade>,
 		);
 
-		expect(mergeFunction).toHaveBeenCalledWith("input", "extra");
+		expect(combineFunction).toHaveBeenCalledWith("input", "extra");
 	});
 	test("1 provider (string array)", () => {
-		const mergeFunction = vitest.fn(defaultMergeFunction);
-		const cs = createCascade(mergeFunction);
-		const InputCascade = cs.Provider;
+		const combineFunction = vitest.fn(defaultCombineFunction);
+		const cc = createCascade(combineFunction);
+		const InputCascade = cc.Provider;
 
-		const Input = () => <input role="button" className={cs("input")} />;
+		const Input = () => <input role="button" className={cc("input")} />;
 
 		render(
 			<InputCascade className={["extra", "plus"]}>
@@ -50,65 +54,70 @@ describe("Cascade", () => {
 			</InputCascade>,
 		);
 
-		expect(mergeFunction).toHaveBeenCalledWith("input", "extra", "plus");
+		expect(combineFunction).toHaveBeenCalledWith("input", "extra", "plus");
 	});
 	test("1 provider (string record)", () => {
-		const mergeFunction = vitest.fn(defaultMergeFunction);
-		const cs = createCascade(mergeFunction);
-		const InputCascade = cs.Provider;
+		const combineFunction = vitest.fn(defaultCombineFunction);
+		const cc = createCascade(combineFunction);
+		const InputCascade = cc.Provider;
 
-		const Input = () => <input role="button" className={cs("input")} />;
-		const Submit = () => <input role="button" className={cs("submit")} />;
+		const Input = () => <input role="button" className={cc("input")} />;
+		const Submit = () => <input role="button" className={cc("submit")} />;
 
 		render(
-			<InputCascade className={{ "input": "extra plus", "submit": "bonus" }}>
+			<InputCascade className={{ input: "extra plus", submit: "bonus" }}>
 				<Input />
 				<Submit />
 			</InputCascade>,
 		);
 
-		expect(mergeFunction).toHaveBeenNthCalledWith(1, "input", "extra plus");
-		expect(mergeFunction).toHaveBeenNthCalledWith(2, "submit", "bonus");
+		expect(combineFunction).toHaveBeenNthCalledWith(1, "input", "extra plus");
+		expect(combineFunction).toHaveBeenNthCalledWith(2, "submit", "bonus");
 	});
 	test("1 provider (array record)", () => {
-		const mergeFunction = vitest.fn(defaultMergeFunction);
-		const cs = createCascade(mergeFunction);
-		const InputCascade = cs.Provider;
+		const combineFunction = vitest.fn(defaultCombineFunction);
+		const cc = createCascade(combineFunction);
+		const InputCascade = cc.Provider;
 
-		const Input = () => <input role="button" className={cs("input")} />;
-		const Submit = () => <input role="button" className={cs("submit")} />;
+		const Input = () => <input role="button" className={cc("input")} />;
+		const Submit = () => <input role="button" className={cc("submit")} />;
 
 		render(
-			<InputCascade className={{ "input": ["extra", "plus"], "submit": "bonus" }}>
+			<InputCascade className={{ input: ["extra", "plus"], submit: "bonus" }}>
 				<Input />
 				<Submit />
 			</InputCascade>,
 		);
 
-		expect(mergeFunction).toHaveBeenNthCalledWith(1, "input", "extra", "plus");
-		expect(mergeFunction).toHaveBeenNthCalledWith(2, "submit", "bonus");
+		expect(combineFunction).toHaveBeenNthCalledWith(
+			1,
+			"input",
+			"extra",
+			"plus",
+		);
+		expect(combineFunction).toHaveBeenNthCalledWith(2, "submit", "bonus");
 	});
 	test("1 provider (function)", () => {
-		const mergeFunction = vitest.fn(defaultMergeFunction);
-		const cs = createCascade(mergeFunction);
-		const InputCascade = cs.Provider;
+		const combineFunction = vitest.fn(defaultCombineFunction);
+		const cc = createCascade(combineFunction);
+		const InputCascade = cc.Provider;
 
-		const Input = () => <input role="button" className={cs("input")} />;
+		const Input = () => <input role="button" className={cc("input")} />;
 
 		render(
-			<InputCascade className={(value) => (['extra', ...value])}>
+			<InputCascade className={(value) => ["extra", ...value]}>
 				<Input />
 			</InputCascade>,
 		);
 
-		expect(mergeFunction).toHaveBeenCalledWith("extra", "input");
+		expect(combineFunction).toHaveBeenCalledWith("extra", "input");
 	});
 	test("2 provider (string)", () => {
-		const mergeFunction = vitest.fn(defaultMergeFunction);
-		const cs = createCascade(mergeFunction);
-		const InputCascade = cs.Provider;
+		const combineFunction = vitest.fn(defaultCombineFunction);
+		const cc = createCascade(combineFunction);
+		const InputCascade = cc.Provider;
 
-		const Input = () => <input role="button" className={cs("input")} />;
+		const Input = () => <input role="button" className={cc("input")} />;
 
 		render(
 			<InputCascade className={"plus"}>
@@ -118,21 +127,24 @@ describe("Cascade", () => {
 			</InputCascade>,
 		);
 
-		expect(mergeFunction).toHaveBeenCalledWith("input", "extra", "plus");
+		expect(combineFunction).toHaveBeenCalledWith("input", "extra", "plus");
 	});
 	test("2 provider (function)", () => {
-		const mergeFunction = vitest.fn(defaultMergeFunction);
-		const cs = createCascade(mergeFunction);
-		const InputCascade = cs.Provider;
+		const combineFunction = vitest.fn(defaultCombineFunction);
+		const cc = createCascade(combineFunction);
+		const InputCascade = cc.Provider;
 
-		const Input = () => <input role="button" className={cs("input")} />;
+		const Input = () => <input role="button" className={cc("input")} />;
 
-		render(<InputCascade className={(value) => ([...value, 'plus'])}>
-						<InputCascade className={(value) => (['extra', ...value])}>
-				<Input />
+		render(
+			<InputCascade className={(value) => [...value, "plus"]}>
+				<InputCascade className={(value) => ["extra", ...value]}>
+					<Input />
+				</InputCascade>
+				,
 			</InputCascade>,
-		</InputCascade>);
+		);
 
-		expect(mergeFunction).toHaveBeenCalledWith("extra", "input", "plus");
+		expect(combineFunction).toHaveBeenCalledWith("extra", "input", "plus");
 	});
 });

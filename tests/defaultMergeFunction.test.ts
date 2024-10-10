@@ -1,8 +1,8 @@
 import { describe, it, expect } from "vitest";
-import { defaultMergeFunction } from "../src/defaultMergeFunction";
+import { defaultCombineFunction } from "../src/defaultCombineFunction";
 
-describe("defaultMergeFunction", () => {
+describe("defaultCombineFunction", () => {
 	it("should join with space", () => {
-		expect(defaultMergeFunction("a", "b", "c")).toBe("a b c");
+		expect(defaultCombineFunction("a", "b", "c")).toBe("a b c");
 	});
 });

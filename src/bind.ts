@@ -1,5 +1,8 @@
-import { MergeFunction } from "./types";
+import { CombineFunction } from "./types";
 
-export function bind<TValue>(mergeFunction: (this: Record<string, string>, ...args: TValue[]) => string, binding: Record<string, string>): MergeFunction<TValue> {
-    return mergeFunction.bind(binding);
+export function bind<TValue>(
+	combineFunction: (this: Record<string, string>, ...args: TValue[]) => string,
+	binding: Record<string, string>,
+): CombineFunction<TValue> {
+	return combineFunction.bind(binding);
 }
