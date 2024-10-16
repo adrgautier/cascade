@@ -1,33 +1,44 @@
-import { ReactNode } from "react";
+import type { ReactNode } from "react";
 
-export type DefaultValue = string;
+export type DefaultArgument = string;
 
-export type CascadeValue<TCombineFunction extends (...args: any) => any> =
+export type InferArgument<TCombineFunction extends () => unknown> =
 	| Parameters<TCombineFunction>[number]
-	| DefaultValue;
+	| DefaultArgument;
 
-export type CascadeClassNameFunction<TValue> = (values: TValue[]) => TValue[];
+export type ArgumentsOverrideFunction<TArg> = (
+	args: TArg[],
+) => (TArg | DefaultArgument)[];
 
-export type CascadeClassName<TValue> =
-	| CascadeClassNameFunction<TValue>
-	| Record<string, TValue[] | string>
-	| TValue[]
-	| string
+export type ArgumentsOverrideProp<TArg> =
+	| ArgumentsOverrideFunction<TArg>
+	| Record<string, TArg[]>
+	| TArg[]
 	| undefined;
 
-export type CascadeContext<TValue> = {
-	className: CascadeClassNameFunction<TValue>;
+export type CascadeContext<TArg> = {
+	argumentOverrideFunction: ArgumentsOverrideFunction<TArg>;
 };
 
-export type CombineFunction<TValue> = (
-	...values: TValue[]
-) => string | undefined;
+export type CombineFunction<TArg> = (...args: TArg[]) => string | undefined;
 
-export type CascadeObject<TValue> = CombineFunction<TValue> & {
-	Provider: (props: ProviderProps<TValue>) => ReactNode;
+export type Cascade<TArg> = CombineFunction<TArg> & {
+	Provider: (props: ProviderProps<TArg>) => ReactNode;
 };
 
-export type ProviderProps<TValue> = {
-	className: CascadeClassName<TValue>;
+export type ProviderProps<TArg> = (
+	| {
+			args: ArgumentsOverrideProp<TArg>;
+			className?: undefined;
+	  }
+	| {
+			args?: undefined;
+			className: string;
+	  }
+	| {
+			args?: undefined;
+			className?: undefined;
+	  }
+) & {
 	children: ReactNode;
 };

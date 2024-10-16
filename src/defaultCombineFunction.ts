@@ -1,4 +1,8 @@
-import type { DefaultValue } from "./types";
+import type { DefaultArgument } from "./types";
 
-export const defaultCombineFunction = (...args: DefaultValue[]): string =>
+/**
+ * Simplest way to generate the value of the class attribute.
+ * This combine function only supports one or multiple strings as arguments.
+ */
+export const defaultCombineFunction = (...args: DefaultArgument[]): string =>
 	args.join(" ");
