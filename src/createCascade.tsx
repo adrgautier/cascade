@@ -21,10 +21,7 @@ export function createCascade<
 	const context = createContext<
 		CascadeContext<InferArgument<TCombineFunction>>
 	>({
-		argumentOverrideFunction: createArgumentOverrideFunction({
-			args: undefined,
-			className: undefined,
-		}),
+		argumentOverrideFunction: createArgumentOverrideFunction(undefined),
 	});
 
 	function consumer(...values: InferArgument<TCombineFunction>[]) {
@@ -33,7 +30,6 @@ export function createCascade<
 	}
 
 	function Provider({
-		args,
 		children,
 		className,
 	}: ProviderProps<InferArgument<TCombineFunction>>) {
@@ -43,10 +39,10 @@ export function createCascade<
 		const argumentOverrideFunction = useMemo(
 			() =>
 				pipe(
-					createArgumentOverrideFunction({ args, className }),
+					createArgumentOverrideFunction(className),
 					parentArgumentOverrideFunction,
 				),
-			[args, className, parentArgumentOverrideFunction],
+			[className, parentArgumentOverrideFunction],
 		);
 
 		const value = useMemo(

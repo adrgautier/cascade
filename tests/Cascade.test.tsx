@@ -23,7 +23,7 @@ describe("Cascade", () => {
 
 		expect(combineFunction).toHaveBeenCalledWith("input");
 	});
-	test("1 provider (className)", () => {
+	test("1 provider (simple className)", () => {
 		const combineFunction = vitest.fn(defaultCombineFunction);
 		const cc = createCascade(combineFunction);
 
@@ -40,7 +40,7 @@ describe("Cascade", () => {
 
 		expect(combineFunction).toHaveBeenCalledWith("input", "extra");
 	});
-	test("1 provider (args array)", () => {
+	test("1 provider (array)", () => {
 		const combineFunction = vitest.fn(defaultCombineFunction);
 		const cc = createCascade(combineFunction);
 		const InputCascade = cc.Provider;
@@ -48,14 +48,14 @@ describe("Cascade", () => {
 		const Input = () => <input role="button" className={cc("input")} />;
 
 		render(
-			<InputCascade args={["extra", "plus"]}>
+			<InputCascade className={["extra", "plus"]}>
 				<Input />
 			</InputCascade>,
 		);
 
 		expect(combineFunction).toHaveBeenCalledWith("input", "extra", "plus");
 	});
-	test("1 provider (args record)", () => {
+	test("1 provider (record)", () => {
 		const combineFunction = vitest.fn(defaultCombineFunction);
 		const cc = createCascade(combineFunction);
 		const InputCascade = cc.Provider;
@@ -64,7 +64,7 @@ describe("Cascade", () => {
 		const Submit = () => <input role="button" className={cc("submit")} />;
 
 		render(
-			<InputCascade args={{ input: ["extra", "plus"], submit: ["bonus"] }}>
+			<InputCascade className={{ input: ["extra", "plus"], submit: "bonus" }}>
 				<Input />
 				<Submit />
 			</InputCascade>,
@@ -78,7 +78,7 @@ describe("Cascade", () => {
 		);
 		expect(combineFunction).toHaveBeenNthCalledWith(2, "submit", "bonus");
 	});
-	test("1 provider (args function)", () => {
+	test("1 provider (function)", () => {
 		const combineFunction = vitest.fn(defaultCombineFunction);
 		const cc = createCascade(combineFunction);
 		const InputCascade = cc.Provider;
@@ -86,7 +86,7 @@ describe("Cascade", () => {
 		const Input = () => <input role="button" className={cc("input")} />;
 
 		render(
-			<InputCascade args={(args) => ["extra", ...args]}>
+			<InputCascade className={(args) => ["extra", ...args]}>
 				<Input />
 			</InputCascade>,
 		);
@@ -110,7 +110,7 @@ describe("Cascade", () => {
 
 		expect(combineFunction).toHaveBeenCalledWith("input", "extra", "plus");
 	});
-	test("2 provider (args function)", () => {
+	test("2 provider (function)", () => {
 		const combineFunction = vitest.fn(defaultCombineFunction);
 		const cc = createCascade(combineFunction);
 		const InputCascade = cc.Provider;
@@ -118,8 +118,8 @@ describe("Cascade", () => {
 		const Input = () => <input role="button" className={cc("input")} />;
 
 		render(
-			<InputCascade args={(args) => [...args, "plus"]}>
-				<InputCascade args={(args) => ["extra", ...args]}>
+			<InputCascade className={(args) => [...args, "plus"]}>
+				<InputCascade className={(args) => ["extra", ...args]}>
 					<Input />
 				</InputCascade>
 				,

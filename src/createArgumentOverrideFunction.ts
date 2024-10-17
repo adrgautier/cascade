@@ -1,33 +1,43 @@
-import type { ArgumentsOverrideFunction, ArgumentsOverrideProp } from "./types";
+import type {
+	ArgumentsOverrideFunction,
+	ArgumentsOverrideProp,
+	DefaultArgument,
+} from "./types";
 
 /**
  * Transform the provider props into the override function passed into the context.
  */
-export function createArgumentOverrideFunction<TArg>({
-	className,
-	args,
-}: {
-	args: ArgumentsOverrideProp<TArg> | undefined;
-	className: string | undefined;
-}): ArgumentsOverrideFunction<TArg> {
-	if (className) {
-		return (inheritedArgs) => [...inheritedArgs, className];
-	}
-
-	if (!args) {
+export function createArgumentOverrideFunction<TArg>(
+	prop: ArgumentsOverrideProp<TArg | DefaultArgument> | undefined,
+): ArgumentsOverrideFunction<TArg | DefaultArgument> {
+	if (!prop) {
 		return (inheritedArgs) => [...inheritedArgs];
 	}
 
-	if (Array.isArray(args)) {
-		return (inheritedArgs) => [...inheritedArgs, ...args];
+	if (typeof prop === "string") {
+		return (inheritedArgs) => [...inheritedArgs, prop];
 	}
 
-	if (typeof args === "object") {
+	if (Array.isArray(prop)) {
+		return (inheritedArgs) => [...inheritedArgs, ...prop];
+	}
+
+	if (typeof prop === "object") {
 		return (inheritedArgs) =>
-			Object.entries(args).reduce(
+			Object.entries(prop).reduce(
 				(acc, [target, additionalArgs]) => {
-					if (inheritedArgs.some((value) => value === target)) {
-						acc.push(...additionalArgs);
+					if (
+						inheritedArgs.some(
+							(inheritedArg) =>
+								typeof inheritedArg === "string" &&
+								inheritedArg.includes(target),
+						)
+					) {
+						if (typeof additionalArgs === "string") {
+							acc.push(additionalArgs);
+						} else {
+							acc.push(...additionalArgs);
+						}
 					}
 					return acc;
 				},
@@ -35,5 +45,5 @@ export function createArgumentOverrideFunction<TArg>({
 			);
 	}
 
-	return args;
+	return prop;
 }

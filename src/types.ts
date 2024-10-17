@@ -12,8 +12,9 @@ export type ArgumentsOverrideFunction<TArg> = (
 
 export type ArgumentsOverrideProp<TArg> =
 	| ArgumentsOverrideFunction<TArg>
-	| Record<string, TArg[]>
+	| Record<string, TArg[] | DefaultArgument>
 	| TArg[]
+	| DefaultArgument
 	| undefined;
 
 export type CascadeContext<TArg> = {
@@ -26,19 +27,7 @@ export type Cascade<TArg> = CombineFunction<TArg> & {
 	Provider: (props: ProviderProps<TArg>) => ReactNode;
 };
 
-export type ProviderProps<TArg> = (
-	| {
-			args: ArgumentsOverrideProp<TArg>;
-			className?: undefined;
-	  }
-	| {
-			args?: undefined;
-			className: string;
-	  }
-	| {
-			args?: undefined;
-			className?: undefined;
-	  }
-) & {
+export type ProviderProps<TArg> = {
+	className: ArgumentsOverrideProp<TArg>;
 	children: ReactNode;
 };
