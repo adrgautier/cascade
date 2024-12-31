@@ -4,128 +4,53 @@
  * the file needs to compile without error.
  */
 import React from "react";
-import { describe, expect, test, vitest } from "vitest";
+import { describe, expect, test, vi } from "vitest";
 import { createCascade } from "../src";
-import { defaultCombineFunction } from "../src/defaultCombineFunction";
 
 import { render } from "@testing-library/react";
 
 describe("Cascade", () => {
 	test("no provider", () => {
-		const combineFunction = vitest.fn(defaultCombineFunction);
-		const cc = createCascade(combineFunction);
+		// GIVEN
+		const cc = createCascade();
 		function Input() {
 			return <input role="button" className={cc("input")} />;
 		}
 
-		Input.Cascade = cc.Provider;
-		render(<Input />);
-
-		expect(combineFunction).toHaveBeenCalledWith("input");
+		// WHEN
+		const result = render(<Input />);
+	
+		// THEN
+		expect(result.container.firstChild).toHaveProperty("className", "input");
 	});
-	test("1 provider (simple className)", () => {
-		const combineFunction = vitest.fn(defaultCombineFunction);
-		const cc = createCascade(combineFunction);
 
+	test("with post function", () => {
+		// GIVEN
+		const postFunctionMock = vi.fn(() => "postFunctionResult");
+		const cc = createCascade(postFunctionMock);
 		function Input() {
 			return <input role="button" className={cc("input")} />;
 		}
 
-		Input.Cascade = cc.Provider;
-		render(
-			<Input.Cascade className="extra">
-				<Input />
-			</Input.Cascade>,
-		);
+		// WHEN
+		const result = render(<Input />);
 
-		expect(combineFunction).toHaveBeenCalledWith("input", "extra");
+		// THEN
+		expect(postFunctionMock).toHaveBeenCalledWith("input");
+		expect(result.container.firstChild).toHaveProperty("className", "postFunctionResult");
 	});
-	test("1 provider (array)", () => {
-		const combineFunction = vitest.fn(defaultCombineFunction);
-		const cc = createCascade(combineFunction);
-		const InputCascade = cc.Provider;
 
-		const Input = () => <input role="button" className={cc("input")} />;
+	test("with provider", () => {
+		// GIVEN
+		const cc = createCascade();
+		function Input() {
+			return <input role="button" className={cc("input")} />;
+		}
 
-		render(
-			<InputCascade className={["extra", "plus"]}>
-				<Input />
-			</InputCascade>,
-		);
+		// WHEN
+		const result = render(<cc.Provider className="password"><Input /></cc.Provider>);
 
-		expect(combineFunction).toHaveBeenCalledWith("input", "extra", "plus");
-	});
-	test("1 provider (record)", () => {
-		const combineFunction = vitest.fn(defaultCombineFunction);
-		const cc = createCascade(combineFunction);
-		const InputCascade = cc.Provider;
-
-		const Input = () => <input role="button" className={cc("input")} />;
-		const Submit = () => <input role="button" className={cc("submit")} />;
-
-		render(
-			<InputCascade className={{ input: ["extra", "plus"], submit: "bonus" }}>
-				<Input />
-				<Submit />
-			</InputCascade>,
-		);
-
-		expect(combineFunction).toHaveBeenNthCalledWith(
-			1,
-			"input",
-			"extra",
-			"plus",
-		);
-		expect(combineFunction).toHaveBeenNthCalledWith(2, "submit", "bonus");
-	});
-	test("1 provider (function)", () => {
-		const combineFunction = vitest.fn(defaultCombineFunction);
-		const cc = createCascade(combineFunction);
-		const InputCascade = cc.Provider;
-
-		const Input = () => <input role="button" className={cc("input")} />;
-
-		render(
-			<InputCascade className={(args) => ["extra", ...args]}>
-				<Input />
-			</InputCascade>,
-		);
-
-		expect(combineFunction).toHaveBeenCalledWith("extra", "input");
-	});
-	test("2 provider (className)", () => {
-		const combineFunction = vitest.fn(defaultCombineFunction);
-		const cc = createCascade(combineFunction);
-		const InputCascade = cc.Provider;
-
-		const Input = () => <input role="button" className={cc("input")} />;
-
-		render(
-			<InputCascade className="plus">
-				<InputCascade className="extra">
-					<Input />
-				</InputCascade>
-			</InputCascade>,
-		);
-
-		expect(combineFunction).toHaveBeenCalledWith("input", "extra", "plus");
-	});
-	test("2 provider (function)", () => {
-		const combineFunction = vitest.fn(defaultCombineFunction);
-		const cc = createCascade(combineFunction);
-		const InputCascade = cc.Provider;
-
-		const Input = () => <input role="button" className={cc("input")} />;
-
-		render(
-			<InputCascade className={(args) => [...args, "plus"]}>
-				<InputCascade className={(args) => ["extra", ...args]}>
-					<Input />
-				</InputCascade>
-				,
-			</InputCascade>,
-		);
-
-		expect(combineFunction).toHaveBeenCalledWith("extra", "input", "plus");
+		// THEN
+		expect(result.container.firstChild).toHaveProperty("className", "input password");
 	});
 });

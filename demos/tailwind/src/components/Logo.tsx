@@ -1,8 +1,7 @@
-import classNames from "classnames/bind";
-import { bind, createCascade } from "../../../../src";
+import { createCascade, mapClassNames } from "../../../../src";
 import styles from './Logo.module.css';
 
-const cc = createCascade(bind(classNames, styles))
+const cc = createCascade(mapClassNames(styles));
 
 type LogoProps = {
     alt: string;

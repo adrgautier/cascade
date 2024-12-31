@@ -1,33 +1,22 @@
 import type { ReactNode } from "react";
 
-export type DefaultArgument = string;
+export type PostFunction = (classNameString: string) => string;
 
-export type InferArgument<TCombineFunction extends () => unknown> =
-	| Parameters<TCombineFunction>[number]
-	| DefaultArgument;
+export type SimpleMapping = Record<string, boolean>;
 
-export type ArgumentsOverrideFunction<TArg> = (
-	args: TArg[],
-) => (TArg | DefaultArgument)[];
+export type MatchMapping = Record<string, string>;
 
-export type ArgumentsOverrideProp<TArg> =
-	| ArgumentsOverrideFunction<TArg>
-	| Record<string, TArg[] | DefaultArgument>
-	| TArg[]
-	| DefaultArgument
-	| undefined;
+export type Argument = string | boolean | undefined | null | SimpleMapping | Argument[];
 
-export type CascadeContext<TArg> = {
-	argumentOverrideFunction: ArgumentsOverrideFunction<TArg>;
+export type ExtendedArgument = Argument | MatchMapping | ExtendedArgument[];
+
+export type ConsumerFunction = (...args: Argument[]) => string | undefined;
+
+export type Cascade = ConsumerFunction & {
+	Provider: (props: ProviderProps) => ReactNode;
 };
 
-export type CombineFunction<TArg> = (...args: TArg[]) => string | undefined;
-
-export type Cascade<TArg> = CombineFunction<TArg> & {
-	Provider: (props: ProviderProps<TArg>) => ReactNode;
-};
-
-export type ProviderProps<TArg> = {
-	className: ArgumentsOverrideProp<TArg>;
+export type ProviderProps = {
+	className: ExtendedArgument;
 	children: ReactNode;
 };

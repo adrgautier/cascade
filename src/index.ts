@@ -1,2 +1,2 @@
 export { createCascade } from "./createCascade";
-export { bind } from "./bind";
+export { mapClassNames } from "./mapClassNames";

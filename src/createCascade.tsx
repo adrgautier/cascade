@@ -1,56 +1,39 @@
 import React, { createContext, use, useMemo } from "react";
-import type {
-	CascadeContext,
+import { CascadeValue } from "./cascadeValue";
+import { computeCascadeValue } from "./computeCascadeValue";
+import { computeClassName } from "./computeClassName";
+import {
+	Argument,
 	Cascade,
-	InferArgument,
-	DefaultArgument,
-	CombineFunction,
+	PostFunction,
 	ProviderProps,
 } from "./types";
-import { defaultCombineFunction } from "./defaultCombineFunction";
-import { createArgumentOverrideFunction } from "./createArgumentOverrideFunction";
-import { pipe } from "./pipe";
 
-export function createCascade<
-	TCombineFunction extends CombineFunction<DefaultArgument>,
->(
-	customCombineFunction?: TCombineFunction,
-): Cascade<InferArgument<TCombineFunction>> {
-	const combineFunction = customCombineFunction || defaultCombineFunction;
+export function createCascade(
+	postFunction?: PostFunction,
+): Cascade {
+	const context = createContext(new CascadeValue());
 
-	const context = createContext<
-		CascadeContext<InferArgument<TCombineFunction>>
-	>({
-		argumentOverrideFunction: createArgumentOverrideFunction(undefined),
-	});
+	function consumer(...args: Argument[]) {
+		const cascadeValueFromContext = use(context);
+		const className = computeClassName(args, cascadeValueFromContext);
 
-	function consumer(...values: InferArgument<TCombineFunction>[]) {
-		const { argumentOverrideFunction } = use(context);
-		return combineFunction(...argumentOverrideFunction(values));
+		if(!postFunction) {
+			return className;
+		}
+		
+		return postFunction(className);
 	}
 
 	function Provider({
 		children,
 		className,
-	}: ProviderProps<InferArgument<TCombineFunction>>) {
-		const { argumentOverrideFunction: parentArgumentOverrideFunction } =
-			use(context);
+	}: ProviderProps) {
+		const cascadeValueFromContext = use(context);
 
-		const argumentOverrideFunction = useMemo(
-			() =>
-				pipe(
-					createArgumentOverrideFunction(className),
-					parentArgumentOverrideFunction,
-				),
-			[className, parentArgumentOverrideFunction],
-		);
-
-		const value = useMemo(
-			() => ({
-				argumentOverrideFunction,
-			}),
-			[argumentOverrideFunction],
-		);
+		const value = useMemo(() => {
+			return computeCascadeValue(className, cascadeValueFromContext);
+		}, [className, cascadeValueFromContext]);
 
 		return <context.Provider value={value}>{children}</context.Provider>;
 	}
