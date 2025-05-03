@@ -1,22 +1,26 @@
-import type { ReactNode } from "react";
+import type { ReactNode, FC } from "react";
+import { UniqueElement } from "./constants";
+import { CascadeValue } from "./cascadeValue";
 
 export type PostFunction = (classNameString: string) => string;
 
-export type SimpleMapping = Record<string, boolean>;
+export type ConsumerFunction = (c: string) => string | undefined;
 
-export type MatchMapping = Record<string, string>;
+export type ProviderComponent = FC<ProviderProps>;
 
-export type Argument = string | boolean | undefined | null | SimpleMapping | Argument[];
+export type Cascade = [ConsumerFunction, ProviderComponent];
 
-export type ExtendedArgument = Argument | MatchMapping | ExtendedArgument[];
-
-export type ConsumerFunction = (...args: Argument[]) => string | undefined;
-
-export type Cascade = ConsumerFunction & {
-	Provider: (props: ProviderProps) => ReactNode;
-};
+export type CascadeMap<TElement extends string> = [Record<TElement, ConsumerFunction>, Record<TElement, ProviderComponent>]
 
 export type ProviderProps = {
-	className: ExtendedArgument;
+	className: string;
 	children: ReactNode;
+	element?: string | UniqueElement;
 };
+
+export type BoundThis = {
+	element?: string,
+	context: React.Context<CascadeValue>,
+}
+
+export type LiteralString<T> = string extends T ? never: unknown;

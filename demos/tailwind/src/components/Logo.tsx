@@ -1,7 +1,8 @@
 import { createCascade, mapClassNames } from "../../../../src";
 import styles from './Logo.module.css';
 
-const cc = createCascade(mapClassNames(styles));
+const cx = mapClassNames(styles);
+const [cc, Provider] = createCascade(['link', 'img']);
 
 type LogoProps = {
     alt: string;
@@ -10,9 +11,9 @@ type LogoProps = {
 };
 
 export function Logo({ href, src, alt }: LogoProps) {
-    return (<a href={href} target="_blank" rel="noreferrer">
-        <img src={src} className={cc('logo')} alt={alt} />
+    return (<a href={href} className={cx(cc.link('logoLink'))} target="_blank" rel="noreferrer">
+        <img src={src} className={cx(cc.img('logo'))} alt={alt} />
     </a>);
 }
 
-Logo.Cascade = cc.Provider;
+Logo.Cascade = Provider;

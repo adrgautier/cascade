@@ -1,31 +1,31 @@
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
-import { Card } from './components/Card'
+import { Card, CardCascade } from './components/Card'
 import { Logo } from './components/Logo'
 import './App.css';
 
 function App() {
 
   return (
-    <Card.Cascade className={['font-bold', { 'flex': 'bg-slate-800 text-xl'}]}>
-      <Card.Cascade className='text-white p-5 my-5'>
+    <CardCascade className='font-bold text-xl'>
+      <CardCascade className='text-white p-10 my-5'>
         <Card className='flex flex-col'>
           <div className='flex justify-center'>
-            <Logo href="https://vitejs.dev" src={viteLogo} alt="Vite logo" />
-            <Logo.Cascade className="animate react">
+            <Logo href="https:s//vitejs.dev" src={viteLogo} alt="Vite logo" />
+            <Logo.Cascade.img className="animate react">
               <Logo href="https://react.dev" src={reactLogo} alt="React logo" />
-            </Logo.Cascade>
+            </Logo.Cascade.img>
           </div>
           <h1>Vite + React</h1>
         </Card>
-      </Card.Cascade>
+      </CardCascade>
     
-      <Card className='p-5'>
+      <Card className='p-5 text-black'>
         <p>
           Edit <code>src/App.tsx</code> and save to test HMR
         </p>
       </Card>
-    </Card.Cascade>
+    </CardCascade>
   )
 }
 

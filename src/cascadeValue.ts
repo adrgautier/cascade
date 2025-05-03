@@ -1,22 +1,25 @@
+import { UniqueElement } from './constants'; 
+
 /**
- * Value of a cascade. Contains:
- * - a common className value
- * - a record of className values by predicate
+ * Value of a cascade. Contains a record of className values by element
  */
 export class CascadeValue {
-    common: string;
-    match: Record<string, string>;
+    private value: Partial<Record<string | UniqueElement, string>>;
 
-    constructor(cascadeValue?: CascadeValue) {
-        this.common = cascadeValue?.common || "";
-        this.match = { ...cascadeValue?.match };
+    constructor(extendedValue?: Partial<Record<string | UniqueElement, string>>) {
+        if(extendedValue) {
+            this.value = extendedValue;
+            return;
+        }
+        this.value = {};
     }
 
-    addCommon(className: string) {
-        this.common = this.common ? `${this.common} ${className}`: className;
+    extend(element: string | UniqueElement, className: string): CascadeValue {
+        const extendedValue = { ...this.value, [element]: this.value[element] ? `${this.value[element]} ${className}` : className };
+        return new CascadeValue(extendedValue);
     }
 
-    addMatch(className: string, predicate: string) {
-        this.match[predicate] = this.match[predicate] ? `${this.match[predicate]} ${className}` : className;
+    get(element: string | UniqueElement) {
+        return this.value[element] || '';
     }
 }
