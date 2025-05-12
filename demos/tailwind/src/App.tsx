@@ -1,20 +1,20 @@
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import { Card, CardCascade } from './components/Card'
-import { Logo } from './components/Logo'
+import { Logo, LogoCascade } from './components/Logo'
 import './App.css';
 
 function App() {
 
   return (
     <CardCascade className='font-bold text-xl'>
-      <CardCascade className='text-white p-10 my-5'>
+      <CardCascade className='text-white p-10 my-5 bg-slate-400'>
         <Card className='flex flex-col'>
           <div className='flex justify-center'>
             <Logo href="https:s//vitejs.dev" src={viteLogo} alt="Vite logo" />
-            <Logo.Cascade.img className="animate react">
+            <LogoCascade.img className="animate react">
               <Logo href="https://react.dev" src={reactLogo} alt="React logo" />
-            </Logo.Cascade.img>
+            </LogoCascade.img>
           </div>
           <h1>Vite + React</h1>
         </Card>

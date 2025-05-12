@@ -1,20 +1,22 @@
 import { createContext, createElement, use, useContext } from "react";
 import { CascadeValue } from "./cascadeValue";
 import {
-	BoundThis,
+	ConsumerThis,
+	ProviderThis,
 	Cascade,
 	CascadeMap,
 	ConsumerFunction,
 	LiteralString,
 	ProviderComponent,
 	ProviderProps,
+	Options,
 } from "./types";
 import { UniqueElement } from "./constants";
 
-function ProviderComponent(this: BoundThis, {
-	children,
-	className
-}: ProviderProps) {
+function ProviderComponent(
+	this: ProviderThis,
+	{ children, className }: ProviderProps,
+) {
 	const element = this.element || UniqueElement;
 	const context = this.context;
 	const cascadeValueFromContext = useContext(context);
@@ -23,30 +25,86 @@ function ProviderComponent(this: BoundThis, {
 	return createElement(context.Provider, { children, value });
 }
 
-function consumerFunction(this: BoundThis, className: string) {
+function consumerFunction<TArgs extends any[]>(
+	this: ConsumerThis<TArgs>,
+	...args: NoInfer<TArgs>
+) {
 	const element = this.element || UniqueElement;
 	const cascadeValueFromContext = use(this.context);
-	return `${className} ${cascadeValueFromContext.get(element)}`;
+	const { in: inFunction, out: outFunction } = this.options;
+
+	let className =
+		typeof inFunction === "function"
+			? inFunction(...args)
+			: (args[0] as string);
+
+	const classNameFromCascade = cascadeValueFromContext.get(element);
+
+	if (classNameFromCascade) {
+		className = `${className} ${classNameFromCascade}`;
+	}
+
+	return typeof outFunction === "function"
+		? outFunction(className)
+		: className;
 }
 
-export function createCascade(elements?: readonly never[]): Cascade;
+export function createCascade(): Cascade;
 
-export function createCascade<TElement extends string & LiteralString<TElement>>(elements?: readonly TElement[]): CascadeMap<TElement>;
+export function createCascade<TInArgs extends any[] = [string]>(
+	options: Options<TInArgs>,
+): Cascade<TInArgs>;
 
-export function createCascade<TElement extends string>(elements?: readonly TElement[]): Cascade | CascadeMap<TElement> {
+export function createCascade<
+	TElement extends string & LiteralString<TElement>,
+>(...elements: readonly TElement[]): CascadeMap<TElement>;
+
+export function createCascade<
+	TElement extends string & LiteralString<TElement>,
+	TInArgs extends any[] = [string],
+>(
+	options: Options<TInArgs>,
+	...elements: readonly TElement[]
+): CascadeMap<TElement, TInArgs>;
+
+export function createCascade(
+	...args: [void | Options | string, ...string[]]
+): Cascade | CascadeMap<string> {
 	const context = createContext(new CascadeValue());
 
-	if(elements?.length) {
-		const consumerFunctions = {} as Record<TElement, ConsumerFunction>;
-		const ProviderComponents = {} as Record<TElement, ProviderComponent>;
+	const options: Options<any[]> = {};
+	let elements: string[];
+
+	if (typeof args[0] === "object") {
+		const [optionArgs, ...elementArgs] = args;
+		options.in = optionArgs.in;
+		options.out = optionArgs.out;
+		elements = elementArgs;
+	} else {
+		elements = args as string[];
+	}
+
+	if (elements?.length) {
+		const consumerFunctions = {} as Record<string, ConsumerFunction>;
+		const ProviderComponents = {} as Record<string, ProviderComponent>;
 
 		elements.forEach((element) => {
-			consumerFunctions[element] = consumerFunction.bind({ context, element: element });
-			ProviderComponents[element] = ProviderComponent.bind({ context, element: element });
-		})
-			
+			consumerFunctions[element] = consumerFunction.bind({
+				context,
+				element,
+				options,
+			});
+			ProviderComponents[element] = ProviderComponent.bind({
+				context,
+				element,
+			});
+		});
+
 		return [consumerFunctions, ProviderComponents];
 	}
 
-	return [consumerFunction.bind({ context }), ProviderComponent.bind({ context })];
+	return [
+		consumerFunction.bind({ context, options }),
+		ProviderComponent.bind({ context }),
+	];
 }

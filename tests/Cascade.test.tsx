@@ -12,45 +12,55 @@ import { render } from "@testing-library/react";
 describe("Cascade", () => {
 	test("no provider", () => {
 		// GIVEN
-		const cc = createCascade();
+		const [useCascade] = createCascade();
 		function Input() {
-			return <input role="button" className={cc("input")} />;
+			return <input role="button" className={useCascade("input")} />;
 		}
 
 		// WHEN
 		const result = render(<Input />);
-	
+
 		// THEN
 		expect(result.container.firstChild).toHaveProperty("className", "input");
 	});
 
-	test("with post function", () => {
+	test("with out function", () => {
 		// GIVEN
-		const postFunctionMock = vi.fn(() => "postFunctionResult");
-		const cc = createCascade(postFunctionMock);
+		const outFunctionMock = vi.fn(() => "outFunctionResult");
+		const [useCascade] = createCascade({ out: outFunctionMock });
 		function Input() {
-			return <input role="button" className={cc("input")} />;
+			return <input role="button" className={useCascade("input")} />;
 		}
 
 		// WHEN
 		const result = render(<Input />);
 
 		// THEN
-		expect(postFunctionMock).toHaveBeenCalledWith("input");
-		expect(result.container.firstChild).toHaveProperty("className", "postFunctionResult");
+		expect(outFunctionMock).toHaveBeenCalledWith("input");
+		expect(result.container.firstChild).toHaveProperty(
+			"className",
+			"outFunctionResult",
+		);
 	});
 
 	test("with provider", () => {
 		// GIVEN
-		const cc = createCascade();
+		const [useCascade, CascadeProvider] = createCascade();
 		function Input() {
-			return <input role="button" className={cc("input")} />;
+			return <input role="button" className={useCascade("input")} />;
 		}
 
 		// WHEN
-		const result = render(<cc.Provider className="password"><Input /></cc.Provider>);
+		const result = render(
+			<CascadeProvider className="password">
+				<Input />
+			</CascadeProvider>,
+		);
 
 		// THEN
-		expect(result.container.firstChild).toHaveProperty("className", "input password");
+		expect(result.container.firstChild).toHaveProperty(
+			"className",
+			"input password",
+		);
 	});
 });
