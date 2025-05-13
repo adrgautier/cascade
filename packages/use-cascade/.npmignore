@@ -1,7 +1,6 @@
 .github
 coverage
 !dist
-demos
 src
 tests
 tsconfig.json

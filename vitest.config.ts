@@ -1,11 +1,11 @@
-import { defineConfig } from 'vitest/config'
+import { defineConfig } from "vitest/config";
 
 export default defineConfig({
-    test: {
-        globals: true,
-        environment: 'jsdom',
-        typecheck: {
-            enabled: true
-        }
-    },
-})
+	test: {
+		globals: true,
+		environment: "jsdom",
+		typecheck: {
+			enabled: true,
+		},
+	},
+});
