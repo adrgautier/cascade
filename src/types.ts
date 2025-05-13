@@ -1,10 +1,9 @@
 import type { ReactNode, FC } from "react";
-import { UniqueElement } from "./constants";
 import { CascadeValue } from "./cascadeValue";
 
 export type ConsumerFunction<TArgs extends any[] = [string]> = (
 	...args: TArgs
-) => string | undefined;
+) => string;
 
 export type ProviderComponent = FC<ProviderProps>;
 
@@ -24,7 +23,6 @@ export type CascadeMap<
 export type ProviderProps = {
 	className: string;
 	children: ReactNode;
-	element?: string | UniqueElement;
 };
 
 export type ConsumerThis<TArgs extends any[]> = {

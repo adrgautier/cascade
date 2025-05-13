@@ -7,137 +7,230 @@ A better way to manipulate class names in React with support for Tailwind and CS
 
 ## Motivation
 
-**classNames** is a great tool to manipulate classes in React. However, every time I use **classNames**, I need to create a new prop to provide additional classes from a parent component: 
+*classNames* is a great tool to manipulate classes in React. However, every time I use **classNames**, I need to create a new prop to provide additional classes from a parent component: 
 
 ```jsx
-const MyComponent = ({ className, ...props }) => {
-    return <div className={classNames('my-component', className)}>; 
+const TextInput = ({ className, ...props }) => {
+    return <input type="text" className={classNames('input', className)}>; 
 }
 ```
 
-**Cascade** is like `classNames` but attached to a context in which you can provide additional class names.
-
-No more `className` props!
+*use-cascade* intend to remove className props by using the context instead.
 
 ## Quick example
 
-First, create a new *Cascade*. 
+The `createCascade` function returns a tuple with a *consumer* function and a *Provider* component.
 
 ```ts
 import { createCascade } from 'use-cascade';
 
-const cc = createCascade();
+const [ useCascade, CascadeProvider ] = createCascade();
 ```
 
-As its core, a *Cascade* is a function that **combines** the classnames passed as **direct arguments** with the classnames provided **in the context(s)**.
+### The *consumer* function
+
+The *consumer* function **combines** the class names passed as **direct arguments** with the class names provided in **the context**.
 
 The direct arguments can be used to give the "base" style to your element:
 
 ```tsx
 export function TextInput() {
-    return <input type="text" className={cc('input')} />
+    return <input type="text" className={useCascade('input')} />
 }
 ```
 
-The *Cascade* gives you access to a *Provider* component with the `Provider` property.
+### The *Provider* component
 
-> ### 💡 Idea
-> You can expose the *Provider* along-side the actual component like so:
->```ts
->TextInput.Cascade = cc.Provider;
->```
+The *Provider* component is a context provider that will provide the class names to its children.
 
-On a parent component, you can provide new classnames to the cascade like so:
+First we need to export the *Provider* component from the file:
 
 ```tsx
-function Form() {
-    return (<TextInput.Cascade className="formInput">
+export const TextInputCascade = CascadeProvider;
+```
+
+Then we can use it in our component tree, to provide new class names to the cascade:
+
+```tsx
+import { TextInput, TextInputCascade } from './TextInput';
+
+function InputField() {
+    return (<TextInputCascade className="fieldInput">
         <TextInput />
-    </TextInput.Cascade>);
+    </TextInputCascade>);
 }
 ```
 
-In this example, the input element will receive, as className, the value `"input formInput"`.
+In this example, the input element will receive, as className prop the value `"input fieldInput"`.
 
-## Accepted arguments
 
-The Provider allows to handle the parameters in the *Cascade* in serveral ways.
+## The providers *Cascade*
 
-### Simple `string`
-
-As seen in the quick example we can pass a `string` value to the className prop:
+In react, the context provider **closer** to the consumer will override the other providers above in the components tree.
 
 ```tsx
-<TextInput.Cascade className="formInput">
-    {/*...*/}
-</TextInput.Cascade>
+function App() {
+    return <Provider value="ignored value">
+        <Provider value="consumed value">
+            <Consumer />
+        </Provider>
+    </Provider>
+}
+
 ```
 
-The string is **added** to the *Cascade* (at the end of the inherited parameters array).
-
-### **Array** of parameters
-
-You can also pass an array of parameters. The accepted values are infered from the accepted values of the *combine* function.
+In *use-cascade* however, providers are "cascading". Every class names provided in the tree will be received by the consumer. Using the previous `inputField` example, we can add another provider to the component tree:
 
 ```tsx
-<TextInput.Cascade className={['italic', 'bold']}>
-    {/*...*/}
-</TextInput.Cascade>
+import { TextInputCascade } from './TextInput';
+import { InputField } from './InputField';
+
+function Form() {
+    return (<TextInputCascade className="formInput">
+        <InputField />
+    </TextInputCascade>);
+}
 ```
 
-The new parameters are **added** to the *Cascade* (at the end of the inherited parameters array).
+In this example, the input element will receive, as className prop the value `"input formInput fieldInput"`.
 
-### Falsy parameters
+ ### *Providers* priority
 
+ > Class names order is only relevant using tools like `tailwind-merge`. In `tailwind-merge` the first class names have **less priority** than the last ones.
 
+ The `consumerFunction` returns the class names passed as **direct arguments** first, then the class names provided in the cascade starting from the top of the tree. That means, the more "specific" is a provider, the more priority will have the provided class names. 
 
-### **Simple mapping**
-
-
-### **Match/Conditional** mapping
-
-Passing a *Record* allows to add parameters to the *Cascade* conditionally. The keys *Record* are the targets (only strings are allowed). The values are either a simple `string` or an *array* of parameters. 
+ If that logic does not suite your use case, you may want to create a new cascade:
 
 ```tsx
-<TextInput.Cascade className={{ 'target1': ['italic', 'bold', 'target2': 'exposant']}}>
-    {/*...*/}
-</TextInput.Cascade>
+const [ useCascade, CascadeProvider ] = createCascade();
+
+export const InputFieldCascade = CascadeProvider;
+
+function InputField() {
+    return (<TextInputCascade className={useCascade(/*...*/)}>
+        <TextInput />
+    </TextInputCascade>); 
+}
 ```
 
-If the target is found in the inherited parameters, the new parameter(s) are **added** to the *Cascade* (at the end of the inherited parameters array).
+In this case, the `InputFieldCascade` provider will have the priority over `TextInputCascade`.
 
-> Note: The exact string is expected in the inherited parameters.
+## API
 
-## Use cases
+The `createCascade` function can be called in different ways. 
 
-### `tailwind-merge` for better tailwind DX
+### `createCascade()`
 
-If you use tailwind, you may want to deduplicate classes and override already defined rules. `tailwind-merge` is the tool for you:
+The `createCascade` function can be called without any argument. It returns a tuple with a *consumer* function and a *Provider* component:
 
 ```ts
-twMerge('px-2 py-1 bg-red hover:bg-dark-red', 'p-3 bg-[#B91C1C]')
-// → 'hover:bg-dark-red p-3 bg-[#B91C1C]'
+[
+    (className: string) => string, 
+    FunctionComponent<{ className: string; children: ReactNode; }>
+]
 ```
 
-As usual, you can create a Cascade with that custom combine function:
+By default, the *consumer* function only accepts a single string.
+
+### `createCascade(options)`
+
+The `createCascade` function can also be called with an `options` object.
 
 ```ts
-const cc = createCascade(twMerge);
+type Options = {
+	in?: (...args: any[]) => string;
+	out?: (a: string) => string;
+};
 ```
 
-Using the same values as the above example:
+The `options` allows to transform the arguments and the return value of the *consumer* function.
+
+#### The `in` function
+
+The `in` function allows to transform **the arguments** passed to the *consumer* function into a **single string**.
+
+Using `classnames` lib as an example, you can rewrite the following code:
+```ts
+import classNames from "classnames";
+
+const [ useCascade ] = createCascade();
+const className = useCascade(classNames('input', { isFocused }));
+```
+
+Like this:
+```ts
+const [ useCascade ] = createCascade({ in: classNames });
+const className = useCascade('input', { isFocused });
+```
+
+The *consumer* function inherits the signature of `in` function provided in the `options` object. This way, any function can be used as long as it returns a string.
+
+#### The `out` function
+
+The `out` function allows to transform the **return value** of the *consumer* function into a **single string**.
+
+Using `tailwind-merge` lib as an example, you can rewrite the following code:
+```ts
+import { twMerge } from "tailwind-merge";
+
+const [ useCascade ] = createCascade();
+const className = twMerge(useCascade('shadow-lg bg-slate-600 rounded-xl'));
+```
+
+Like this:
+```ts
+const [ useCascade ] = createCascade({ out: twMerge });
+const className = useCascade('shadow-lg bg-slate-600 rounded-xl');
+```
+
+The `out` function must accept at least a string as the first argument and must return a string.
+
+### `createCascade(...elements)`
+
+The `createCascade` function can be called with the list of elements in the cascade.
+
+```ts
+const [ useCascade, CascadeProvider ] = createCascade(
+    'wrapper', 'title', 'description',
+);
+
+export const ArticleCascade = CascadeProvider;
+```
+
+This creates a *consumer* function for each element:
 
 ```tsx
-// TextInput component
-<input type="text" className={cc('px-2 py-1 bg-red hover:bg-dark-red')} />
-
-// parent component
-<TextInput.Cascade className="p-3 bg-[#B91C1C]">
-    {/* ... */}
-</TextInput.Cascade>
+<article className={useCascade.wrapper('wrapper')}>
+    <h1 className={useCascade.title('title')}>Title</h1>
+    <p className={useCascade.description('description')}>
+        {/* description */}
+    </p>
+</article>
 ```
 
-Under the hood, the `twMerge` helper will produce the expected class combination.
+This also creates a *provider* component for each element. This ensures targeting a specific element when providing new class to the cascade:
+
+```tsx
+<ArticleCascade.wrapper className={'listArticle'}>
+    {articles.map((item) => <Article {...item} />)}
+</ArticleCascade.wrapper>
+```
+
+
+### `createCascade(options, ...elements)`
+
+The `createCascade` function can be called with both the list of elements in the cascade.
+The is combines the behaviors described in the above sections.
+
+```ts
+const [ useCascade, CascadeProvider ] = createCascade(
+    { in: classNames.bind(styles) },
+    'wrapper', 'title', 'description',
+);
+```
+
+## Guide
 
 ### Using with CSS modules
 
@@ -149,63 +242,46 @@ import classNames from 'classnames/bind';
 const cx = classNames.bind(styles);
 ```
 
-Cascade provides a mapClassNames factory that create a post-processing function according to a mapping of classNames.
+This approach can be used to transform the class names provided to the *consumer* function into their hashed version.
 
 ```ts
-const cc = createCascade(mapClassNames(styles));
+const [ useCascade ] = createCascade({ in: classNames.bind(styles) });
 ```
 
-Because this transformation happens at the very end it ensures match/conditional mapping rely on local names (without hash).
+> This **does not** transform the class names provided outside the component. To achieve this behavior you must use the `out` function. `classnames` requires to split the classes to work properly:
+>
+>```ts
+>const [ useCascade ] = createCascade({ 
+>    out: (classes: string) => classNames.bind(styles)(classes.split(" ")) 
+> });
+>```
 
-But another benefit is to be able to enable a local class name from outside the component.
+### Using Tailwind
+
+If you use Tailwind, you may want to deduplicate classes and override already defined rules. `tailwind-merge` is the tool for you:
+
+```ts
+twMerge('px-2 py-1 bg-red hover:bg-dark-red', 'p-3 bg-[#B91C1C]')
+// returns → 'hover:bg-dark-red p-3 bg-[#B91C1C]'
+```
+`twMerge` must be used as the `out` function:
+
+```ts
+const [ useCascade, CascadeProvider ] = createCascade({ out: twMerge });
+
+export const TextInputCascade = CascadeProvider;
+```
+
+Using the same values as the above example:
 
 ```tsx
-<Alert.Cascade className="error">
-    <Alert>Something went wrong!</Alert>
-</Alert.Cascade>
+// TextInput component
+<input type="text" className={useCascade('px-2 py-1 bg-red hover:bg-dark-red')} />
+
+// parent component
+<TextInputCascade className="p-3 bg-[#B91C1C]">
+    {/* ... */}
+</TextInputCascade>
 ```
 
-## Priority/Specificity
-
-An important part of styling is handling priority. In regular CSS, a declaration is applied according to: 
-- its order (last-one in the cascade is used)
-- the specificity of the selector (a more specific selector has the priority)
-
-Of course the order of the class names in the `class` attribute is not relevant. However, it is important when using deduping tools like **tailwind-merge** that expect the last class to have priority other the first one.
-
-To work properly **Cascade** must  compute the className with the following logic:
-
-Three group of class names are identified and organize in the following order:
-First the class names provided to the consumer,  
-then the class names provided in the context,
-finally the class names provided in the context with conditional mapping.
-
-Inside each group, class names are ordered as provided.
-
-When using multiple providers, the order depends on the specificity:
-```tsx
-<Component.Cascade className={["A", "B"]}>
-    <Component />
-    <Component.Cascade className="C">
-        <Component />
-    </Component.Cascade>
-</Component.Cascade>
-```
-
-This allows to apply some class names globally that can be overrided by more specific class names. 
-
-If that logic does not suite your use case, you may want to create a new cascade:
-
-```tsx
-const cc = createCascade();
-
-function PasswordInput() {
-    return (<TextInput.Cascade className={cc(/*...*/)}>
-        <TextInput />
-    </TextInput.Cascade>); 
-}
-
-PasswordInput.Cascade = cc.Provider;
-```
-
-In this case, `PasswordInput.Cascade` will have the priority over `TextInput.Cascade`.
+Under the hood, the `twMerge` helper will produce the expected class combination.

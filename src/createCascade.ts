@@ -44,9 +44,7 @@ function consumerFunction<TArgs extends any[]>(
 		className = `${className} ${classNameFromCascade}`;
 	}
 
-	return typeof outFunction === "function"
-		? outFunction(className)
-		: className;
+	return typeof outFunction === "function" ? outFunction(className) : className;
 }
 
 export function createCascade(): Cascade;
