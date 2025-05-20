@@ -66,7 +66,7 @@ In this example, the input element will receive, as className prop the value `"i
 
 ## The providers *Cascade*
 
-In react, the context provider **closer** to the consumer will override the other providers above in the components tree.
+In react, the context provider **the closest** to the consumer will override the other providers above in the components tree.
 
 ```tsx
 function App() {
