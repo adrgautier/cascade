@@ -1,24 +1,24 @@
 import {
-	ChevronRightIcon,
-	CubeTransparentIcon,
 	AdjustmentsHorizontalIcon,
+	ChevronRightIcon,
 	CommandLineIcon,
+	CubeTransparentIcon,
 } from "@heroicons/react/20/solid";
-import { Logo } from "./components/Logo";
-import { Separator } from "./components/Separator";
 import { Badge } from "./components/Badge";
-import { Feature } from "./components/Feature";
-import { CodeExample } from "./components/examples/CodeExample";
-import { CascadeExample } from "./components/examples/CascadeExample";
-import { TailwindExample } from "./components/examples/TailwindExample";
-import { CSSModulesExample } from "./components/examples/CSSModulesExample";
-import { IridescentBlobs } from "./components/IridescentBlobs";
-import { Footer } from "./components/Footer";
-import { Section } from "./components/Section";
-import { Header } from "./components/Header";
-import { Main } from "./components/Main";
-import { InlineCode } from "./components/InlineCode";
 import { CodeBlock } from "./components/CodeBlock";
+import { Feature } from "./components/Feature";
+import { Footer } from "./components/Footer";
+import { Header } from "./components/Header";
+import { InlineCode } from "./components/InlineCode";
+import { IridescentBlobs } from "./components/IridescentBlobs";
+import { Logo } from "./components/Logo";
+import { Main } from "./components/Main";
+import { Section } from "./components/Section";
+import { Separator } from "./components/Separator";
+import { CSSModulesExample } from "./components/examples/CSSModulesExample";
+import { CascadeExample } from "./components/examples/CascadeExample";
+import { CodeExample } from "./components/examples/CodeExample";
+import { TailwindExample } from "./components/examples/TailwindExample";
 
 function App() {
 	return (
@@ -54,34 +54,38 @@ function App() {
 						title="Cascading Context"
 						description="Simulate the CSS cascading behavior using React context."
 					/>
-										<Feature
+					<Feature
 						icon={CommandLineIcon}
 						title="Simple API"
 						description="Create the Provider and the consumer using a single line of code."
 					/>
 				</div>
-				
 
 				<div className="space-y-16">
 					<Section>
-	
-						<h2 className="text-2xl font-bold text-gray-900 mb-4">
-							API
-						</h2>
-						<p className="mb-4">The <InlineCode>createCascade</InlineCode> function can be called in different ways. </p>
+						<h2 className="text-2xl font-bold text-gray-900 mb-4">API</h2>
+						<p className="mb-4">
+							The <InlineCode>createCascade</InlineCode> function can be called
+							in different ways.{" "}
+						</p>
 						<div className="space-y-4">
 							<div className="flex items-start gap-4">
 								<ChevronRightIcon className="w-6 h-6 text-[#0035bb] flex-shrink-0 mt-1" />
 								<div className="overflow-auto">
-									<h3 className="font-semibold text-gray-900"><InlineCode>createCascade()</InlineCode>
+									<h3 className="font-semibold text-gray-900">
+										<InlineCode>createCascade()</InlineCode>
 									</h3>
 									<p className="text-gray-600">
-										Without any argument, it returns a tuple with a <em>consumer</em> function and a <em>Provider</em> component:
+										Without any argument, it returns a tuple with a{" "}
+										<em>consumer</em> function and a <em>Provider</em>{" "}
+										component:
 									</p>
-									<CodeBlock code={`[
+									<CodeBlock
+										code={`[
     (className: string) => string, 
     FunctionComponent<{ className: string; children: ReactNode; }>
-]`}></CodeBlock>
+]`}
+									/>
 								</div>
 							</div>
 							<div className="flex items-start gap-4">
@@ -91,7 +95,8 @@ function App() {
 										Multiple Cascades
 									</h3>
 									<p className="text-gray-600">
-										Create separate cascades for different style concerns, each with its own priority system.
+										Create separate cascades for different style concerns, each
+										with its own priority system.
 									</p>
 								</div>
 							</div>
@@ -102,7 +107,8 @@ function App() {
 										Named Elements
 									</h3>
 									<p className="text-gray-600">
-										Create cascades with named elements for better organization and targeting specific parts of your components.
+										Create cascades with named elements for better organization
+										and targeting specific parts of your components.
 									</p>
 								</div>
 							</div>
@@ -113,7 +119,8 @@ function App() {
 							Why use-cascade?
 						</h2>
 						<p className="text-gray-600 mb-6">
-							Say goodbye to className prop drilling! No more creating new props just to provide additional classes from parent components.
+							Say goodbye to className prop drilling! No more creating new props
+							just to provide additional classes from parent components.
 						</p>
 						<CodeExample />
 					</Section>
@@ -123,7 +130,9 @@ function App() {
 							The Power of Cascade
 						</h2>
 						<p className="text-gray-600 mb-6">
-							Unlike regular React context where the closest provider wins, use-cascade combines all provider values in the tree. More specific providers have higher priority.
+							Unlike regular React context where the closest provider wins,
+							use-cascade combines all provider values in the tree. More
+							specific providers have higher priority.
 						</p>
 						<CascadeExample />
 					</Section>
@@ -134,7 +143,8 @@ function App() {
 								Tailwind Integration
 							</h2>
 							<p className="text-gray-600 mb-6">
-								Perfect integration with tailwind-merge for smart class deduplication and proper specificity handling.
+								Perfect integration with tailwind-merge for smart class
+								deduplication and proper specificity handling.
 							</p>
 							<TailwindExample />
 						</Section>
@@ -144,7 +154,8 @@ function App() {
 								CSS Modules Support
 							</h2>
 							<p className="text-gray-600 mb-6">
-								Full CSS Modules support with classnames bind approach for both local and provided classes.
+								Full CSS Modules support with classnames bind approach for both
+								local and provided classes.
 							</p>
 							<CSSModulesExample />
 						</Section>
@@ -156,9 +167,7 @@ function App() {
 				<p className="text-white">
 					&copy; {new Date().getFullYear()} use-cascade. All rights reserved.
 				</p>
-				<p className="text-white mt-2">
-					Created with ❤️ by Adrien Gautier.
-				</p>
+				<p className="text-white mt-2">Created with ❤️ by Adrien Gautier.</p>
 			</Footer>
 		</>
 	);

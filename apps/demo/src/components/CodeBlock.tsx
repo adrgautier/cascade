@@ -1,5 +1,5 @@
-import { useEffect } from "react";
 import Prism from "prismjs";
+import { useEffect } from "react";
 import "prismjs/themes/prism-tomorrow.css";
 import "prismjs/components/prism-typescript";
 import "prismjs/components/prism-jsx";
@@ -11,6 +11,7 @@ interface CodeBlockProps {
 }
 
 export function CodeBlock({ code, language = "typescript" }: CodeBlockProps) {
+	// biome-ignore lint/correctness/useExhaustiveDependencies: need to refresh prism on code change
 	useEffect(() => {
 		Prism.highlightAll();
 	}, [code]);

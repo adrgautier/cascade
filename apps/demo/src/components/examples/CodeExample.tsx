@@ -1,5 +1,5 @@
-import React from 'react';
-import { CodeBlock } from '../CodeBlock';
+import React from "react";
+import { CodeBlock } from "../CodeBlock";
 
 export function CodeExample() {
 	const code = `// No more className props drilling!

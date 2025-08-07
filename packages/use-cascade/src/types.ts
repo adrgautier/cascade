@@ -1,20 +1,20 @@
-import type { ReactNode, FC } from "react";
-import { CascadeValue } from "./cascadeValue";
+import type { FC, ReactNode } from "react";
+import type { CascadeValue } from "./cascadeValue";
 
-export type ConsumerFunction<TArgs extends any[] = [string]> = (
+export type ConsumerFunction<TArgs extends readonly unknown[] = [string]> = (
 	...args: TArgs
 ) => string;
 
 export type ProviderComponent = FC<ProviderProps>;
 
-export type Cascade<TArgs extends any[] = [string]> = [
+export type Cascade<TArgs extends readonly unknown[] = [string]> = [
 	ConsumerFunction<TArgs>,
 	ProviderComponent,
 ];
 
 export type CascadeMap<
 	TElement extends string,
-	TArgs extends any[] = [string],
+	TArgs extends readonly unknown[] = [string],
 > = [
 	{ [e in TElement]: ConsumerFunction<TArgs> },
 	{ [e in TElement]: ProviderComponent },
@@ -25,7 +25,7 @@ export type ProviderProps = {
 	children: ReactNode;
 };
 
-export type ConsumerThis<TArgs extends any[]> = {
+export type ConsumerThis<TArgs extends readonly unknown[]> = {
 	context: React.Context<CascadeValue>;
 	element?: string;
 	options: Options<TArgs>;
@@ -36,7 +36,7 @@ export type ProviderThis = {
 	element?: string;
 };
 
-export type Options<TInArgs extends any[] = [string]> = {
+export type Options<TInArgs extends readonly unknown[] = unknown[]> = {
 	in?: (...args: TInArgs) => string;
 	out?: (a: string) => string;
 };

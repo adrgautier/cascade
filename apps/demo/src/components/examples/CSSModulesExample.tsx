@@ -1,5 +1,5 @@
-import React from 'react';
-import { CodeBlock } from '../CodeBlock';
+import React from "react";
+import { CodeBlock } from "../CodeBlock";
 
 export function CSSModulesExample() {
 	const code = `import classNames from 'classnames/bind';

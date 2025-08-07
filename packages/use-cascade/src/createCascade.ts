@@ -1,17 +1,17 @@
 import { createContext, createElement, use, useContext } from "react";
 import { CascadeValue } from "./cascadeValue";
-import {
-	ConsumerThis,
-	ProviderThis,
+import { UniqueElement } from "./constants";
+import type {
 	Cascade,
 	CascadeMap,
 	ConsumerFunction,
+	ConsumerThis,
 	LiteralString,
-	ProviderComponent,
-	ProviderProps,
 	Options,
+	ProviderComponent as ProviderComponentType,
+	ProviderProps,
+	ProviderThis,
 } from "./types";
-import { UniqueElement } from "./constants";
 
 function ProviderComponent(
 	this: ProviderThis,
@@ -25,7 +25,7 @@ function ProviderComponent(
 	return createElement(context.Provider, { children, value });
 }
 
-function consumerFunction<TArgs extends any[]>(
+function consumerFunction<TArgs extends readonly unknown[]>(
 	this: ConsumerThis<TArgs>,
 	...args: NoInfer<TArgs>
 ) {
@@ -49,7 +49,7 @@ function consumerFunction<TArgs extends any[]>(
 
 export function createCascade(): Cascade;
 
-export function createCascade<TInArgs extends any[] = [string]>(
+export function createCascade<TInArgs extends readonly unknown[] = [string]>(
 	options: Options<TInArgs>,
 ): Cascade<TInArgs>;
 
@@ -59,18 +59,19 @@ export function createCascade<
 
 export function createCascade<
 	TElement extends string & LiteralString<TElement>,
-	TInArgs extends any[] = [string],
+	TInArgs extends readonly unknown[] = [string],
 >(
 	options: Options<TInArgs>,
 	...elements: readonly TElement[]
 ): CascadeMap<TElement, TInArgs>;
 
 export function createCascade(
+	// biome-ignore lint/suspicious/noConfusingVoidType: appropriate when no args are provided
 	...args: [void | Options | string, ...string[]]
 ): Cascade | CascadeMap<string> {
 	const context = createContext(new CascadeValue());
 
-	const options: Options<any[]> = {};
+	const options: Options = {};
 	let elements: string[];
 
 	if (typeof args[0] === "object") {
@@ -84,9 +85,9 @@ export function createCascade(
 
 	if (elements?.length) {
 		const consumerFunctions = {} as Record<string, ConsumerFunction>;
-		const ProviderComponents = {} as Record<string, ProviderComponent>;
+		const ProviderComponents = {} as Record<string, ProviderComponentType>;
 
-		elements.forEach((element) => {
+		for (const element of elements) {
 			consumerFunctions[element] = consumerFunction.bind({
 				context,
 				element,
@@ -96,7 +97,7 @@ export function createCascade(
 				context,
 				element,
 			});
-		});
+		}
 
 		return [consumerFunctions, ProviderComponents];
 	}

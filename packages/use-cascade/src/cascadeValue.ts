@@ -1,4 +1,4 @@
-import { UniqueElement } from "./constants";
+import type { UniqueElement } from "./constants";
 
 /**
  * Value of a cascade. Contains a record of className values by element
