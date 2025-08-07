@@ -1,6 +1,6 @@
 # use-cascade
 
- ![typescript](https://img.shields.io/badge/written%20for-typescript-3178c6?style=flat-square) [![codecov](https://img.shields.io/codecov/c/github/adrgautier/cascade?style=flat-square&token=IPTGBDRRJE)](https://codecov.io/gh/adrgautier/cascade) ![prettier](https://img.shields.io/badge/code%20style-biome-6ca8f7?style=flat-square) [![npm](https://img.shields.io/npm/v/use-cascade?style=flat-square)](https://www.npmjs.com/package/use-cascade)
+ ![typescript](https://img.shields.io/badge/written%20for-typescript-3178c6?style=flat-square) ![biome](https://img.shields.io/badge/checked%20with-biome-60a5fa?style=flat-square) ![vitest](https://img.shields.io/badge/tested%20with-vitest-729b1b?style=flat-square) [![codecov](https://img.shields.io/codecov/c/github/adrgautier/cascade?style=flat-square&token=IPTGBDRRJE)](https://codecov.io/gh/adrgautier/cascade) [![npm](https://img.shields.io/npm/v/use-cascade?style=flat-square)](https://www.npmjs.com/package/use-cascade)
 
 
 A better way to manipulate class names in React with support for Tailwind and CSS Modules.

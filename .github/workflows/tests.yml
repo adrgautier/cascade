@@ -1,0 +1,30 @@
+name: Tests
+on:
+  - push
+  - pull_request
+jobs:
+  test:
+    name: Node.js ${{ matrix.node-version }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version:
+          - 24
+          - 22
+          - 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9.15.0
+      - run: pnpm install
+      - run: pnpm --filter use-cascade test
+      - run: pnpm --filter use-cascade check
+      - uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          slug: adrgautier/cascade

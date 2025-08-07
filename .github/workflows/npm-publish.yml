@@ -1,0 +1,23 @@
+name: NPM Publish
+on:
+  release:
+    types: [created]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.x'
+          registry-url: 'https://registry.npmjs.org'
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9.15.0
+      - run: pnpm install
+      - run: pnpm --filter use-cascade test
+      - run: pnpm --filter use-cascade check
+      - run: pnpm --filter use-cascade build
+      - run: pnpm --filter use-cascade publish --no-git-checks
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.npm_token }}
