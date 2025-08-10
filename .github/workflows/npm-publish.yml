@@ -18,6 +18,6 @@ jobs:
       - run: pnpm --filter use-cascade test
       - run: pnpm --filter use-cascade check
       - run: pnpm --filter use-cascade build
-      - run: pnpm --filter use-cascade publish --no-git-checks
+      - run: cd packages/use-cascade && npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.npm_token }}
