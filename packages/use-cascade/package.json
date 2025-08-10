@@ -1,5 +1,24 @@
 {
 	"name": "use-cascade",
+	"description": "Manipulate class names in React through a cascading context.",
+	"author": {
+		"name": "Adrien Gautier",
+		"email": "dev@adrgautier.co",
+		"url": "https://adrgautier.co"
+	},
+	"keywords": [
+		"react",
+		"css",
+		"context",
+		"cascade",
+		"tailwind",
+		"classnames"
+	],
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/adrgautier/cascade/tree/main/packages/use-cascade"
+	},
+	"license": "MIT",
 	"version": "0.0.2",
 	"main": "dist/index.js",
 	"scripts": {
