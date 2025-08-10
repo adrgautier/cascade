@@ -1,11 +1,10 @@
-import type { FC, ReactNode } from "react";
 import type { CascadeValue } from "./cascadeValue";
 
 export type ConsumerFunction<TArgs extends readonly unknown[] = [string]> = (
 	...args: TArgs
 ) => string;
 
-export type ProviderComponent = FC<ProviderProps>;
+export type ProviderComponent = React.FC<ProviderProps>;
 
 export type Cascade<TArgs extends readonly unknown[] = [string]> = [
 	ConsumerFunction<TArgs>,
@@ -22,7 +21,7 @@ export type CascadeMap<
 
 export type ProviderProps = {
 	className: string;
-	children: ReactNode;
+	children: React.ReactNode;
 };
 
 export type ConsumerThis<TArgs extends readonly unknown[]> = {
