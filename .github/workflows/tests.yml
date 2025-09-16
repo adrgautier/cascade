@@ -28,3 +28,6 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           slug: adrgautier/cascade
+          directory: ./packages/use-cascade/coverage
+          files: ./packages/use-cascade/coverage/coverage-final.json
+          root_dir: ./packages/use-cascade
