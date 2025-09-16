@@ -19,7 +19,7 @@
 		"url": "https://github.com/adrgautier/cascade/tree/main/packages/use-cascade"
 	},
 	"license": "MIT",
-	"version": "0.0.2",
+	"version": "0.0.3",
 	"main": "dist/index.js",
 	"scripts": {
 		"clean": "rimraf dist",
