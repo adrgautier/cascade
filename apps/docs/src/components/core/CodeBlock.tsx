@@ -17,7 +17,7 @@ export function CodeBlock({ code, language = "typescript" }: CodeBlockProps) {
 
 	return (
 		<pre className="bg-gray-900 rounded-xl p-6 overflow-x-auto relative flex">
-			<code className={`text-sm language-${language}`}>{code}</code>
+			<code className={`text-sm language-${language} w-0`}>{code}</code>
 		</pre>
 	);
 }
